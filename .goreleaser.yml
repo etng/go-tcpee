@@ -1,0 +1,68 @@
+before:
+  hooks:
+    - go mod download
+    - go mod tidy
+    - go generate ./...
+release:
+  draft: true
+  disable: false
+builds:
+  - env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - amd64
+    flags:
+      #      - -tags=kqueue
+      - -trimpath
+    dir: ./
+    main: ./client/client.go
+    id: tcp_client
+    binary: tcp_client
+    ldflags:
+      - "-s -w -X github.com.etng.go-tcpee.version.Version={{.Version}} -X github.com.etng.go-tcpee.version.ReleaseTag={{.Tag}} -X github.com.etng.go-tcpee.version.CommitID={{.FullCommit}} -X github.com.etng.go-tcpee.version.ShortCommitID={{.ShortCommit}}"
+  - env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - amd64
+    flags:
+      #      - -tags=kqueue
+      - -trimpath
+    dir: ./
+    main: ./server/server.go
+    id: tcp_server
+    binary: tcp_server
+    ldflags:
+      - "-s -w -X github.com.etng.go-tcpee.version.Version={{.Version}} -X github.com.etng.go-tcpee.version.ReleaseTag={{.Tag}} -X github.com.etng.go-tcpee.version.CommitID={{.FullCommit}} -X github.com.etng.go-tcpee.version.ShortCommitID={{.ShortCommit}}"
+
+archives:
+  -
+    builds:
+      - tcp_client
+      - tcp_server
+    format_overrides:
+      - goos: windows
+        format: zip
+    replacements:
+        darwin: Darwin
+        linux: Linux
+        windows: Windows
+        386: i386
+        amd64: x86_64
+checksum:
+  name_template: 'checksums.txt'
+snapshot:
+  name_template: "{{ .Tag }}-next"
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
