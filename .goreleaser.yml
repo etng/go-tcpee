@@ -4,7 +4,7 @@ before:
     - go mod tidy
     - go generate ./...
 release:
-  draft: true
+  draft: false
   disable: false
 builds:
   - env:
