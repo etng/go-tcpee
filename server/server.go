@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"os"
 	"strconv"
 	"sync"
 	"time"
@@ -57,7 +58,8 @@ func NewClientManager() *Clients {
 // Clients is the list of clients, client can sign in/off
 type Clients struct {
 	sync.Mutex
-	clients map[string]*Client
+	clients    map[string]*Client
+	LastActive time.Time
 }
 
 // Client is an client
@@ -70,6 +72,20 @@ type Client struct {
 // Report just shows the clients statistics
 func (cm *Clients) Report() {
 	log.Printf("current clients count: %d\n", len(cm.clients))
+	if len(cm.clients) == 0 {
+		if cm.LastActive.IsZero() {
+			cm.LastActive = time.Now()
+		} else {
+			if time.Now().Sub(cm.LastActive) > time.Second*30 {
+				log.Printf("last active is %s", cm.LastActive.Format(time.RFC3339))
+				log.Printf("idle too long, quit now")
+				os.Exit(0)
+			}
+		}
+
+	} else if !cm.LastActive.IsZero() {
+		cm.LastActive = time.Time{}
+	}
 }
 
 // NewClient create a new client based on the tcp connection and register it
