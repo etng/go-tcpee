@@ -19,6 +19,8 @@ var addr = flag.String("addr", "", "The address to listen to; default is \"\" (a
 var port = flag.Int("port", 8000, "The port to listen on; default is 8000.")
 
 func main() {
+	log.SetPrefix("[go-tcpee-server] ")
+	log.SetFlags(log.LstdFlags | log.Llongfile)
 	fmt.Printf("Go TCPee Server %s-%s %s(%s)\n", version.Version, version.ReleaseTag, version.CommitID, version.ShortCommitID)
 
 	flag.Parse()
@@ -34,7 +36,7 @@ func main() {
 	go func() {
 		t := time.NewTicker(time.Second * 5)
 		defer t.Stop()
-		for _ = range t.C {
+		for range t.C {
 			clients.Report()
 		}
 	}()
@@ -162,7 +164,6 @@ func handleMessage(message string, c *Client) bool {
 			c.Send([]byte("Welcome back anytime!\n"))
 			fmt.Println("< " + "%quit%")
 			c.Send([]byte("%quit%\n"))
-			//os.Exit(0)
 			return false
 		default:
 			c.Send([]byte("Unrecognized command.\n"))

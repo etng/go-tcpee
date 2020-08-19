@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"log"
 	"net"
 	"os"
 	"regexp"
@@ -26,6 +27,8 @@ You can use '/exit' or 'CTRL+C' to quit.
 `
 
 func main() {
+	log.SetPrefix("[go-tcpee-client] ")
+	log.SetFlags(log.LstdFlags | log.Llongfile)
 	fmt.Printf("Go TCPee Client %s-%s %s(%s)\n", version.Version, version.ReleaseTag, version.CommitID, version.ShortCommitID)
 
 	flag.Parse()
