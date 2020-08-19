@@ -142,7 +142,8 @@ func handleMessage(message string, c *Client) bool {
 
 		case message == "/quit":
 			fmt.Println("Quitting.")
-			c.Send([]byte("I'm shutting down now.\n"))
+			c.Send([]byte("I'm shutting down connection with you now.\n"))
+			c.Send([]byte("Welcome back anytime!\n"))
 			fmt.Println("< " + "%quit%")
 			c.Send([]byte("%quit%\n"))
 			//os.Exit(0)
